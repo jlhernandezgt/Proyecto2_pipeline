@@ -18,6 +18,16 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.svm import SVC
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import plot_tree
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import roc_curve, roc_auc_score  
+
 
 
 
@@ -187,5 +197,88 @@ def funcion_final (df, col1, col2, factor):
     final = FeatureScaling(dataset_temp)
     return final
 
+
+
+#verificación de balanceo de datos.
+def balanceo_datos(df, col1):
+    return(df[col1].value_counts())
+
+
+
+#### modelo svc
+
+def modelo_svc(Xtrain_df,ytrain_df,Xtest_df):
+    svm = SVC(kernel="linear", C=1)
+    svm.fit(Xtrain_df, ytrain_df)
+    y_preds_svm = svm.predict(Xtest_df)
+    return(y_preds_svm)
+
+
+def validacion_svc(df):
+    TP = df.iloc[1,1]
+    TN = df.iloc[0,0]
+    FN = df.iloc[1,0]
+    FP = df.iloc[0,1]
+    print("Sentitividad: ", TP/(TP+FN))
+    print("Especificidad: ", TN/(TN+FP))
+
+
+
+
+def modelo_naive_bayes(Xtrain_df,ytrain_df,Xtest_df):
+    clf_nb = GaussianNB()
+    clf_nb.fit(Xtrain_df, ytrain_df)
+    y_preds_nb = clf_nb.predict(Xtest_df)
+    return(y_preds_nb)
+
+
+def validacion_nb(df):
+    TP = df.iloc[1,1]
+    TN = df.iloc[0,0]
+    FN = df.iloc[1,0]
+    FP = df.iloc[0,1]
+    print("Sentitividad: ", TP/(TP+FN))
+    print("Especificidad: ", TN/(TN+FP))
+
+
+
+
+def modelo_arbol_decision(Xtrain_df,ytrain_df,Xtest_df):
+    clf_tree = DecisionTreeClassifier()
+    clf_tree.fit(Xtrain_df, ytrain_df)
+    y_preds_tree = clf_tree.predict(Xtest_df)
+    return(y_preds_tree)
+
+
+def validacion_dt(df):
+    TP = df.iloc[1,1]
+    TN = df.iloc[0,0]
+    FN = df.iloc[1,0]
+    FP = df.iloc[0,1]
+    print("Sentitividad: ", TP/(TP+FN))
+    print("Especificidad: ", TN/(TN+FP))
+
+
+def modelo_knn(Xtrain_df,ytrain_df,Xtest_df):
+    clf_knn = KNeighborsClassifier(n_neighbors=3)
+    clf_knn.fit(Xtrain_df, ytrain_df)
+    y_preds_knn = clf_knn.predict(Xtest_df)
+    return(y_preds_knn)
+
+
+def validacion_knn(df):
+    TP = df.iloc[1,1]
+    TN = df.iloc[0,0]
+    FN = df.iloc[1,0]
+    FP = df.iloc[0,1]
+    print("Sentitividad: ", TP/(TP+FN))
+    print("Especificidad: ", TN/(TN+FP))
+    
+
+def print_roc(ytest_df):
+    print('ROC-ACU -> SVM = ', roc_auc_score(ytest_df, y_preds_svm))
+    print('ROC-ACU -> NB = ', roc_auc_score(ytest_df, y_preds_nb))
+    print('ROC-ACU -> Tree = ', roc_auc_score(ytest_df, y_preds_tree))
+    print('ROC-ACU -> KNN = ', roc_auc_score(ytest_df, y_preds_knn))
 
 
