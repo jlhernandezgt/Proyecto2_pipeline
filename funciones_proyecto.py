@@ -275,10 +275,10 @@ def validacion_knn(df):
     print("Especificidad: ", TN/(TN+FP))
     
 
-def print_roc(ytest_df):
-    print('ROC-ACU -> SVM = ', roc_auc_score(ytest_df, y_preds_svm))
-    print('ROC-ACU -> NB = ', roc_auc_score(ytest_df, y_preds_nb))
-    print('ROC-ACU -> Tree = ', roc_auc_score(ytest_df, y_preds_tree))
-    print('ROC-ACU -> KNN = ', roc_auc_score(ytest_df, y_preds_knn))
+def print_roc(ytest_df,y_svm,y_nb,y_tree,y_knn):
+    print('ROC-ACU -> SVM = ', roc_auc_score(ytest_df, y_svm))
+    print('ROC-ACU -> NB = ', roc_auc_score(ytest_df, y_nb))
+    print('ROC-ACU -> Tree = ', roc_auc_score(ytest_df, y_tree))
+    print('ROC-ACU -> KNN = ', roc_auc_score(ytest_df, y_knn))
 
 

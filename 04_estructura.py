@@ -131,7 +131,7 @@ fn.validacion_knn(conf_matrix)
 
 
 
-fn.print_roc(y_test)
+fn.print_roc(y_test,y_preds_svm,y_preds_nb,y_preds_tree,y_preds_knn)
 
 
 svm_prob, svm_prob_v, _ = roc_curve(y_test, y_preds_svm)
