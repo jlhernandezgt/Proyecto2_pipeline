@@ -27,6 +27,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.tree import plot_tree
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import roc_curve, roc_auc_score  
+import time
 
 
 
@@ -55,6 +56,8 @@ for col in col_numerics:
     fn.plot_density_variable(numeric_data, col) 
 
 fn.FillNaN_Corr_DF(numeric_data, 'points_in_wallet', 'age' )
+numeric_data[col_numerics].isnull().mean()
+
 dataset_final = fn.funcion_final(numeric_data, 'avg_transaction_value','age', 1.75)
 
 
@@ -64,20 +67,28 @@ dataset_final = fn.funcion_final(numeric_data, 'avg_transaction_value','age', 1.
 fn.balanceo_datos(data, 'gender')    
 data_balanceada = data  
 
-### funcion de reproceso de data  ---- por confirmar
-#proceso de balanceo de data.
-nFem = len(data_balanceada[data_balanceada['gender'] == "F"])
-fem = data_balanceada[data_balanceada['gender'] == "F"]
-mas = data_balanceada[data_balanceada['gender'] == "M"]
-mas = mas.sample(2*nFem, random_state=2022, replace=True)
-data_balanceada = mas.append(fem)
-data_balanceada = data_balanceada.sample(frac=1, random_state=2022)
-data_balanceada
+#data_balanceada[data_balanceada['gender'] == 'Unknown'] = 'M'
 
 fn.balanceo_datos(data_balanceada, 'gender')  
 
+
+
+### funcion de reproceso de data  ---- por confirmar
+#proceso de balanceo de data.
+nMasculino = len(data_balanceada[data_balanceada['gender'] == "M"])
+Masculino = data_balanceada[data_balanceada['gender'] == "M"]
+Femenino = data_balanceada[data_balanceada['gender'] == "F"]
+Femenino = Femenino.sample(nMasculino, random_state=1234, replace=True)
+data_balanceada = Femenino.append(Masculino)
+data_balanceada = data_balanceada.sample(frac=1, random_state=1234)
+data_balanceada
+
+
+
+
 fn.FillNaN_Corr_DF(data_balanceada, 'points_in_wallet', 'age' )
-X = data_balanceada[['avg_transaction_value', 'points_in_wallet']]
+#X = data_balanceada[['avg_transaction_value', 'points_in_wallet']]
+X = data_balanceada[['avg_transaction_value']]
 y = data_balanceada['gender']
 
 #Ingeniería de caracteristicas - Codificación del Target.
@@ -85,35 +96,48 @@ lableEncoder = LabelEncoder()
 lableEncoder.fit(['M', 'F'])
 y = lableEncoder.transform(y.values)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, shuffle=True, random_state=2022)
 
+#X_train, X_test, y_train, y_test = train_test_split(X, y, train_size = 0.7, shuffle=True, random_state=1234)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size = 0.7, shuffle=True, random_state=1234)
 
+modelo = SVC(C = 100, kernel = 'linear', random_state=123)
+modelo.fit(X_train, y_train)
 
-y_preds_svm = fn.modelo_svc(X_train, y_train, X_test)
+start = time.time()
+y_preds_svm = fn.modelo_svm(X_train, y_train, X_test)
+end = time.time()
+print("tiempo de entrenamiento: ", round(end - start), "segundos.")
 
 print("Accuracy: ", accuracy_score(y_test, y_preds_svm))
      
 conf_matrix = pd.crosstab(y_test, y_preds_svm, rownames=["observación"], colnames=["Predicción"])
 print("Matriz de Confusión: \n\n", conf_matrix)
 
+fn.validacion_svm(conf_matrix)
 
 
-fn.validacion_svc(conf_matrix)4
 
 
-
+start = time.time()
 y_preds_nb = fn.modelo_naive_bayes(X_train, y_train, X_test)
+end = time.time()
+print("tiempo de entrenamiento: ", round(end - start), "segundos.")
+
 
 print("Accuracy: ", accuracy_score(y_test, y_preds_nb))
 
-conf_matrix = pd.crosstab(y_test, y_preds_svm, rownames=["observación"], colnames=["Predicción"])
+conf_matrix = pd.crosstab(y_test, y_preds_nb, rownames=["observación"], colnames=["Predicción"])
 print("Matriz de Confusión: \n\n", conf_matrix)    
 
 fn.validacion_nb(conf_matrix)
 
 
 
+
+start = time.time()
 y_preds_tree = fn.modelo_arbol_decision(X_train, y_train, X_test)
+end = time.time()
+print("tiempo de entrenamiento: ", round(end - start), "segundos.")
 
 print("Accuracy: ", accuracy_score(y_test, y_preds_tree))
 
@@ -124,8 +148,10 @@ fn.validacion_dt(conf_matrix)
 
 
 
-
+start = time.time()
 y_preds_knn = fn.modelo_knn(X_train, y_train, X_test)
+end = time.time()
+print("tiempo de entrenamiento: ", round(end - start), "segundos.")
 
 print("Accuracy: ", accuracy_score(y_test, y_preds_knn))
 
@@ -133,6 +159,7 @@ conf_matrix = pd.crosstab(y_test, y_preds_knn, rownames=["observación"], colnam
 print("Matriz de Confusión: \n\n", conf_matrix)
 
 fn.validacion_knn(conf_matrix)
+
 
 
 

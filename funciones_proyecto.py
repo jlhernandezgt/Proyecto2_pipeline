@@ -27,6 +27,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.tree import plot_tree
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import roc_curve, roc_auc_score  
+import time
 
 
 
@@ -207,14 +208,14 @@ def balanceo_datos(df, col1):
 
 #### modelo svc
 
-def modelo_svc(Xtrain_df,ytrain_df,Xtest_df):
+def modelo_svm(Xtrain_df,ytrain_df,Xtest_df):
     svm = SVC(kernel="linear", C=1)
     svm.fit(Xtrain_df, ytrain_df)
     y_preds_svm = svm.predict(Xtest_df)
     return(y_preds_svm)
 
 
-def validacion_svc(df):
+def validacion_svm(df):
     TP = df.iloc[1,1]
     TN = df.iloc[0,0]
     FN = df.iloc[1,0]
@@ -230,7 +231,6 @@ def modelo_naive_bayes(Xtrain_df,ytrain_df,Xtest_df):
     clf_nb.fit(Xtrain_df, ytrain_df)
     y_preds_nb = clf_nb.predict(Xtest_df)
     return(y_preds_nb)
-
 
 def validacion_nb(df):
     TP = df.iloc[1,1]
