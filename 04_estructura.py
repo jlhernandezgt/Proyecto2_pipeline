@@ -52,32 +52,37 @@ numeric_data[col_numerics].isnull().mean()
 numeric_data.head()
 
 for col in col_numerics:
-    fn.graficar_data_densidad(numeric_data, col) 
+    fn.plot_density_variable(numeric_data, col) 
+
+fn.FillNaN_Corr_DF(numeric_data, 'points_in_wallet', 'age' )
+dataset_final = fn.funcion_final(numeric_data, 'avg_transaction_value','age', 1.75)
 
 
-dataset_final = fn.funcion_final(numeric_data, 'age', 'avg_transaction_value', 1.75)
 
 
-
-fn.balanceo_datos(data, 'default')        
+  
+fn.balanceo_datos(data, 'gender')    
+data_balanceada = data  
 
 ### funcion de reproceso de data  ---- por confirmar
 #proceso de balanceo de data.
-nYes = len(data[data['default'] == "Yes"])
-yes = data[data['default'] == "Yes"]
-no = data[data['default'] == "No"]
-no = no.sample(2*nYes, random_state=2022)
-data = no.append(yes)
-data = data.sample(frac=1, random_state=2022)
-data
+nFem = len(data_balanceada[data_balanceada['gender'] == "F"])
+fem = data_balanceada[data_balanceada['gender'] == "F"]
+mas = data_balanceada[data_balanceada['gender'] == "M"]
+mas = mas.sample(2*nFem, random_state=2022, replace=True)
+data_balanceada = mas.append(fem)
+data_balanceada = data_balanceada.sample(frac=1, random_state=2022)
+data_balanceada
 
+fn.balanceo_datos(data_balanceada, 'gender')  
 
-X = data[['balance', 'income']]
-y = data['default']
+fn.FillNaN_Corr_DF(data_balanceada, 'points_in_wallet', 'age' )
+X = data_balanceada[['avg_transaction_value', 'points_in_wallet']]
+y = data_balanceada['gender']
 
 #Ingeniería de caracteristicas - Codificación del Target.
 lableEncoder = LabelEncoder()
-lableEncoder.fit(['No', 'Yes'])
+lableEncoder.fit(['M', 'F'])
 y = lableEncoder.transform(y.values)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, shuffle=True, random_state=2022)
@@ -93,7 +98,7 @@ print("Matriz de Confusión: \n\n", conf_matrix)
 
 
 
-fn.validacion_svc(conf_matrix)
+fn.validacion_svc(conf_matrix)4
 
 
 
