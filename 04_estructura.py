@@ -52,7 +52,7 @@ numeric_data[col_numerics].isnull().mean()
 numeric_data.head()
 
 for col in col_numerics:
-    fn.graficar_data_densidad(numeric_data, col) 
+    fn.plt_dns_df(numeric_data, col) 
 
 
 dataset_final = fn.funcion_final(numeric_data, 'age', 'avg_transaction_value', 1.75)
