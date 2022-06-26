@@ -27,7 +27,10 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.tree import plot_tree
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import roc_curve, roc_auc_score  
-
+import time
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+from sklearn.utils import resample
 
 
 
@@ -207,14 +210,14 @@ def balanceo_datos(df, col1):
 
 #### modelo svc
 
-def modelo_svc(Xtrain_df,ytrain_df,Xtest_df):
+def modelo_svm(Xtrain_df,ytrain_df,Xtest_df):
     svm = SVC(kernel="linear", C=1)
     svm.fit(Xtrain_df, ytrain_df)
     y_preds_svm = svm.predict(Xtest_df)
     return(y_preds_svm)
 
 
-def validacion_svc(df):
+def validacion_svm(df):
     TP = df.iloc[1,1]
     TN = df.iloc[0,0]
     FN = df.iloc[1,0]
@@ -230,7 +233,6 @@ def modelo_naive_bayes(Xtrain_df,ytrain_df,Xtest_df):
     clf_nb.fit(Xtrain_df, ytrain_df)
     y_preds_nb = clf_nb.predict(Xtest_df)
     return(y_preds_nb)
-
 
 def validacion_nb(df):
     TP = df.iloc[1,1]
@@ -274,11 +276,46 @@ def validacion_knn(df):
     print("Sentitividad: ", TP/(TP+FN))
     print("Especificidad: ", TN/(TN+FP))
     
+    
 
-def print_roc(ytest_df,y_svm,y_nb,y_tree,y_knn):
+
+    
+def modelo_lda(Xtrain_df,ytrain_df,Xtest_df):
+    lda = LinearDiscriminantAnalysis(solver="svd", store_covariance=True)
+    lda.fit(Xtrain_df, ytrain_df)
+    y_preds_lda = lda.predict(Xtest_df)
+    return(y_preds_lda)
+
+def validacion_lda(df):
+    TP = df.iloc[1,1]
+    TN = df.iloc[0,0]
+    FN = df.iloc[1,0]
+    FP = df.iloc[0,1]
+    print("Sentitividad: ", TP/(TP+FN))
+    print("Especificidad: ", TN/(TN+FP))
+    
+
+def modelo_qda(Xtrain_df,ytrain_df,Xtest_df):
+    qda = QuadraticDiscriminantAnalysis(store_covariance=True)
+    qda.fit(Xtrain_df, ytrain_df)
+    y_preds_qda = qda.predict(Xtest_df)
+    return(y_preds_qda)
+    
+def validacion_qda(df):
+    TP = df.iloc[1,1]
+    TN = df.iloc[0,0]
+    FN = df.iloc[1,0]
+    FP = df.iloc[0,1]
+    print("Sentitividad: ", TP/(TP+FN))
+    print("Especificidad: ", TN/(TN+FP))
+    
+def print_roc(ytest_df,y_svm,y_nb,y_tree,y_knn,y_lda,y_qda):
     print('ROC-ACU -> SVM = ', roc_auc_score(ytest_df, y_svm))
     print('ROC-ACU -> NB = ', roc_auc_score(ytest_df, y_nb))
     print('ROC-ACU -> Tree = ', roc_auc_score(ytest_df, y_tree))
     print('ROC-ACU -> KNN = ', roc_auc_score(ytest_df, y_knn))
+    print('ROC-ACU -> LDA = ', roc_auc_score(ytest_df, y_lda))
+    print('ROC-ACU -> QDA = ', roc_auc_score(ytest_df, y_qda))
+
 
 
