@@ -27,10 +27,13 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.tree import plot_tree
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import roc_curve, roc_auc_score  
-import time
+import time as tm
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.utils import resample
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from datetime import datetime
 
 
 
@@ -352,5 +355,3 @@ def plotCategoricalVals(df, categoric_vars, y):
         plt.figure(figsize=(12,6))
         plot = sns.countplot(x=df[column], hue=df[y])
         plt.show()
-
-

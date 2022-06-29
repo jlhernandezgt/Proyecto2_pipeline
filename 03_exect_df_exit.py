@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jun 27 17:55:35 2022
-
-@author: luish
-"""
 
 import numpy as np
 import pandas as pd
@@ -33,41 +27,37 @@ import preprocessors as pp
 
 
 df = pd.read_csv("churn.csv")
-#df = df.dropna()
-df = pd.DataFrame(df[0:2500])
+df = df.dropna()
+df = pd.DataFrame(df[0:5000])
 df = df.sample(frac=1, random_state=1234)
 
 categoric_vars, discrete_vars , continues_vars = fn.getColumnsDataTypes(df=df)
 
-
-
-
-gender_level_map = df['gender_code'].value_counts().to_dict()
+gender_level_map = df['gender'].value_counts().to_dict()
 gender_level_map
 
-df['gender_code'] = df['gender_code'].map(gender_level_map)
+df['gender'] = df['gender'].map(gender_level_map)
 df.head()
 
-#X = df[['avg_transaction_value','points_in_wallet']]
-#y = df['gender']
 
-X = df.drop(['gender_code', 'avg_transaction_value'], axis=1)
-y = df['gender_code']
+X = df.drop(['gender', 'avg_transaction_value'], axis=1)
+y = df['gender']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, shuffle=True, random_state=2022)
 
 def instanciatePipeline(df, y):
     categoric_vars, discrete_vars , continues_vars = fn.getColumnsDataTypes(df=df)    
     #categoric_vars.remove(y)
-    bankChurner_Pipeline = Pipeline(steps=[
+    churn_pipeline = Pipeline(steps=[
         ('categorical-encoder',
-            pp.categoricalEncoderOperator(varNames=categoric_vars)),
-
-        ('classifier',
-            fn.modelo_qda(X_train, y_train, X_test))
+            pp.categoricalEncoderOperator(varNames=categoric_vars))
     ])
 
-    return bankChurner_Pipeline
+    return churn_pipeline
 
 dfSalida = instanciatePipeline(df, 'gender').fit_transform(X_train, y_train)
 dfSalida
+
+dfSalida['gender'] = pd.get_dummies(y, drop_first=True)
+
+dfSalida.to_csv("train_output.csv")
